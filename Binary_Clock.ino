@@ -12,6 +12,8 @@
 #define PIN_BTN_HRS 2
 #define PIN_BTN_MIN 3
 #define PIN_BTN_SEC 4
+#define PIN_BRT 5
+#define PIN_LIGHT_SENS A3
 
 int hrs = 0,
     mins = 0,
@@ -34,6 +36,7 @@ void setup() {
   pinMode(PIN_BTN_HRS, INPUT_PULLUP);
   pinMode(PIN_BTN_MIN, INPUT_PULLUP);
   pinMode(PIN_BTN_SEC, INPUT_PULLUP);
+  pinMode(PIN_BRT, OUTPUT);
   
   if (!rtc.begin()) {
     while (1);
@@ -43,6 +46,7 @@ void setup() {
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
 
+  analogWrite(PIN_BRT, 0);
 //  Serial.begin(57600);
 }
 
@@ -78,6 +82,11 @@ void loop() {
   }
 
   displayTime(hrs, mins, secs);
+
+  int lightVal = analogRead(PIN_LIGHT_SENS);
+  lightVal = constrain(lightVal, 300, 800);
+  lightVal = map(lightVal, 300, 800, 10, 255);
+  analogWrite(PIN_BRT, lightVal);
 }
 
 int incrementHrs() {
